@@ -145,37 +145,23 @@ export function TicketDetail({
   const [visitTime, setVisitTime] = useState(SLOT_RANGES[slug]?.start || '09:00');
 
   const bookingRef = useRef<HTMLDivElement>(null);
-  const [showStickyCta, setShowStickyCta] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [isBookingVisible, setIsBookingVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsBookingVisible(entry.isIntersecting);
-      },
-      { threshold: 0.05 }
-    );
-    if (bookingRef.current) {
-      observer.observe(bookingRef.current);
-    }
-    return () => observer.disconnect();
-  }, [bookingRef]);
+  const [isPastBooking, setIsPastBooking] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY < lastScrollY - 5) {
-        setShowStickyCta(true);
-      } else if (currentScrollY > lastScrollY + 5) {
-        setShowStickyCta(false);
+      if (!bookingRef.current) return;
+      const rect = bookingRef.current.getBoundingClientRect();
+      if (rect.top <= window.innerHeight) {
+        setIsPastBooking(true);
+      } else {
+        setIsPastBooking(false);
       }
-      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Check initially
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -386,7 +372,6 @@ export function TicketDetail({
   };
 
   const scrollToBooking = () => {
-    setShowStickyCta(false);
     bookingRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -756,7 +741,7 @@ export function TicketDetail({
       )}
 
       {/* Sticky mobile CTA */}
-      <div className={`${styles.mobileStickyCta} ${showStickyCta && !isBookingVisible ? '' : styles.mobileStickyCtaHidden}`}>
+      <div className={`${styles.mobileStickyCta} ${!isPastBooking ? '' : styles.mobileStickyCtaHidden}`}>
         <button
           type="button"
           className={styles.mobileCtaBtn}

@@ -657,13 +657,11 @@
 }
 
 @media (hover: hover) {
-  .mobileCtaBtn:hover:not(:disabled) {
+
+  .mobileCtaBtn:hover:not(:disabled),
+  .mobileCtaBtn:active:not(:disabled) {
     background: var(--color-buy-hover);
   }
-}
-
-.mobileCtaBtn:active:not(:disabled) {
-  background: var(--color-buy-hover);
 }
 
 @media (min-width: 768px) {
