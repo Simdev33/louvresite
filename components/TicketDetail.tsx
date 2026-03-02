@@ -199,6 +199,8 @@ export function TicketDetail({
     images?: string[];
     thumbnail?: string;
     closures?: Closures;
+    openingTime?: string;
+    closingTime?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -279,7 +281,9 @@ export function TicketDetail({
   const closures: Closures = fetchedDetail?.closures ?? { dates: [], slots: {} };
 
   const total = adults * priceAdult + children * priceChild;
-  const timeSlots = buildTimeSlots(SLOT_RANGES[slug]?.start || '09:00', SLOT_RANGES[slug]?.end || '18:00', 30);
+  const startT = fetchedDetail?.openingTime || SLOT_RANGES[slug]?.start || '09:00';
+  const endT = fetchedDetail?.closingTime || SLOT_RANGES[slug]?.end || '18:00';
+  const timeSlots = buildTimeSlots(startT, endT, 30);
   const today = startOfDay(new Date());
   const selectedDate = startOfDay(new Date(visitDate));
   const monthTitle = new Intl.DateTimeFormat(LOCALE_MAP[locale], {

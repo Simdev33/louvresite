@@ -78,7 +78,9 @@
       "/uploads/1771925504020-614397927-thumbnail-large-1765621426970-image__4_.webp",
       "/uploads/1771925504026-706168221-thumbnail-large-1765621426970-image__3_.webp",
       "/uploads/1771925504032-598285996-thumbnail-large-1765621426970-1762256170643-1__1_.webp"
-    ]
+    ],
+    "openingTime": "09:30",
+    "closingTime": "16:00"
   },
   {
     "id": "2",
@@ -145,7 +147,9 @@
       "/uploads/1771925587545-829288655-thumbnail-large-1762255921000-eiffel-tower-paris-france-champ-de-mars-view.webp",
       "/uploads/1771925587553-942827753-thumbnail-large-1762255921000-champ-de-mars-eiffel.jpg",
       "/uploads/1771925587559-552770932-thumbnail-large-1762414398200-1014-0714_eiffel-tower.webp"
-    ]
+    ],
+    "openingTime": "10:00",
+    "closingTime": "22:00"
   },
   {
     "id": "3",
@@ -215,6 +219,8 @@
       "/uploads/1771925600253-182187466-thumbnail-large-1762417442843-image__15_.jpg",
       "/uploads/1771925600258-454749336-thumbnail-large-1762417442846-image__14_.jpg",
       "/uploads/1771925600264-226876066-thumbnail-large-1763711860492-seineriver.jpg"
-    ]
+    ],
+    "openingTime": "10:00",
+    "closingTime": "22:00"
   }
 ]

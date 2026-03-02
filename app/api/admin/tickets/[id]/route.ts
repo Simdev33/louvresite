@@ -53,7 +53,8 @@ export async function PATCH(
   const allowed = [
     'name', 'priceAdult', 'priceChild', 'stock', 'duration',
     'longDescription', 'included', 'notIncluded', 'important',
-    'meetingPoint', 'mapSrc', 'closures', 'thumbnail', 'images', 'slug'
+    'meetingPoint', 'mapSrc', 'closures', 'thumbnail', 'images', 'slug',
+    'openingTime', 'closingTime'
   ];
   for (const key of allowed) {
     if (body[key] !== undefined) {

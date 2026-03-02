@@ -20,6 +20,8 @@ interface TicketData {
   priceChild: number;
   stock: number;
   duration?: string | Record<string, string>;
+  openingTime?: string;
+  closingTime?: string;
   thumbnail?: string;
   images?: string[];
   longDescription?: string | Record<string, string>;
@@ -141,6 +143,8 @@ export default function EditTicketPage() {
           priceChild: form.priceChild != null ? Number(form.priceChild) : undefined,
           stock: form.stock != null ? Number(form.stock) : undefined,
           duration: form.duration,
+          openingTime: form.openingTime,
+          closingTime: form.closingTime,
           longDescription: form.longDescription,
           thumbnail: form.thumbnail,
           images: form.images,
@@ -236,7 +240,9 @@ export default function EditTicketPage() {
   };
 
   const slugRange = SLOT_RANGES[ticket?.slug ?? 'louvre'] ?? SLOT_RANGES.louvre;
-  const timeSlots = buildTimeSlots(slugRange.start, slugRange.end, 30);
+  const startT = form.openingTime || slugRange.start;
+  const endT = form.closingTime || slugRange.end;
+  const timeSlots = buildTimeSlots(startT, endT, 30);
 
   const firstOfMonth = startOfMonth(closureViewMonth);
   const startWeekday = (firstOfMonth.getDay() + 6) % 7;
@@ -268,7 +274,7 @@ export default function EditTicketPage() {
             <Link href="/admin/orders" className={styles.menuItem}>{t('admin.orders') || 'Orders'}</Link>
             <Link href="/admin/stripe" className={styles.menuItem}>Stripe API</Link>
             <Link href="/admin/reviews" className={styles.menuItem}>Reviews</Link>
-                        <Link href="/admin/terms" className={styles.menuItem}>{t('admin.terms') || 'Terms'}</Link>
+            <Link href="/admin/terms" className={styles.menuItem}>{t('admin.terms') || 'Terms'}</Link>
             <Link href="/admin/about" className={styles.menuItem}>{t('admin.about') || 'About Us'}</Link>
             <Link href="/admin/privacy" className={styles.menuItem}>{t('admin.privacy') || 'Privacy'}</Link>
             <Link href="/admin/faq" className={styles.menuItem}>{t('admin.faq') || 'FAQ'}</Link>
@@ -361,6 +367,22 @@ export default function EditTicketPage() {
                 placeholder="pl. 2-4 hours"
                 value={getLocalizedValue('duration')}
                 onChange={(e) => updateLocalizedField('duration', e.target.value)}
+              />
+
+              <label className={styles.label}>Nyitvatartás kezdete (09:00)</label>
+              <input
+                type="time"
+                className={styles.input}
+                value={form.openingTime ?? ''}
+                onChange={(e) => setForm((f) => ({ ...f, openingTime: e.target.value }))}
+              />
+
+              <label className={styles.label}>Nyitvatartás vége (18:00)</label>
+              <input
+                type="time"
+                className={styles.input}
+                value={form.closingTime ?? ''}
+                onChange={(e) => setForm((f) => ({ ...f, closingTime: e.target.value }))}
               />
 
               <label className={styles.label}>Képek (Kiskép és Galéria)</label>
