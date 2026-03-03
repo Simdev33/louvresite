@@ -16,6 +16,15 @@ export const viewport: Viewport = {
 import Footer from '@/components/Footer';
 import Script from 'next/script';
 
+import { DM_Sans } from 'next/font/google';
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -32,14 +41,8 @@ export default function RootLayout({
           data-blockingmode="auto"
         />
         */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap"
-          rel="stylesheet"
-        />
       </head>
-      <body>
+      <body className={dmSans.className}>
         <I18nProvider>
           {children}
           <Footer />
