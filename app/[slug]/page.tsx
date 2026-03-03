@@ -1,41 +1,58 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { Nav } from '@/components/Nav';
-import { useI18n } from '@/i18n/context';
 import { TicketDetail } from '@/components/TicketDetail';
 import { TicketReviews } from '@/components/TicketReviews';
-import { getLocalizedText } from '@/i18n/utils';
+import { notFound } from 'next/navigation';
 
-export default function DynamicTicketPage() {
-    const params = useParams<{ slug: string }>();
-    const slug = params?.slug ?? '';
-    const { t, locale } = useI18n();
-    const [ticket, setTicket] = useState<any>(null);
+export const dynamic = 'force-dynamic';
 
-    useEffect(() => {
-        if (!slug) return;
-        fetch(`/api/tickets/${slug}?t=${Date.now()}`)
-            .then((res) => (res.ok ? res.json() : null))
-            .then((data) => setTicket(data));
-    }, [slug]);
+export default async function DynamicTicketPage({ params }: { params: { slug: string } }) {
+    const slug = params.slug;
+
+    const { data: ticket, error: ticketError } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+    if (ticketError || !ticket) {
+        notFound();
+    }
+
+    const { data: reviews, error: reviewsError } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('ticketSlug', slug)
+        .eq('status', 'approved');
+
+    const ticketReviews = reviews || [];
+    let averageRating = 0;
+    if (ticketReviews.length > 0) {
+        const total = ticketReviews.reduce((sum: number, r: any) => sum + r.rating, 0);
+        averageRating = total / ticketReviews.length;
+    }
+
+    const enhancedTicket = {
+        ...ticket,
+        averageRating: averageRating.toFixed(1),
+        reviewCount: ticketReviews.length,
+    };
+
+    const mappedReviews = ticketReviews.map(r => ({
+        id: r.id,
+        ticketSlug: r.ticketSlug,
+        author: r.userName,
+        rating: r.rating,
+        text: r.comment,
+        date: r.createdAt
+    }));
 
     return (
         <>
             <Nav />
             <main className="page-main">
-                <TicketDetail
-                    title={ticket?.name ? getLocalizedText(ticket.name, locale) : t(`${slug}.title`)}
-                    description={ticket?.longDescription ? getLocalizedText(ticket.longDescription, locale) : t(`${slug}.description`)}
-                    duration={ticket?.duration ? getLocalizedText(ticket.duration, locale) : t(`${slug}.duration`)}
-                    priceAdult={ticket?.priceAdult ?? 0}
-                    priceChild={ticket?.priceChild ?? 0}
-                    slug={slug}
-                    averageRating={ticket?.averageRating}
-                    reviewCount={ticket?.reviewCount}
-                />
-                <TicketReviews slug={slug} />
+                <TicketDetail ticket={enhancedTicket} />
+                <TicketReviews reviews={mappedReviews} />
             </main>
         </>
     );

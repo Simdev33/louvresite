@@ -46,7 +46,7 @@ export default function AdminTicketsPage() {
             <Link href="/admin/orders" className={styles.menuItem}>{t('admin.orders') || 'Orders'}</Link>
             <Link href="/admin/stripe" className={styles.menuItem}>Stripe API</Link>
             <Link href="/admin/reviews" className={styles.menuItem}>Reviews</Link>
-                        <Link href="/admin/terms" className={styles.menuItem}>{t('admin.terms') || 'Terms'}</Link>
+            <Link href="/admin/terms" className={styles.menuItem}>{t('admin.terms') || 'Terms'}</Link>
             <Link href="/admin/about" className={styles.menuItem}>{t('admin.about') || 'About Us'}</Link>
             <Link href="/admin/privacy" className={styles.menuItem}>{t('admin.privacy') || 'Privacy'}</Link>
             <Link href="/admin/faq" className={styles.menuItem}>{t('admin.faq') || 'FAQ'}</Link>
@@ -78,8 +78,8 @@ export default function AdminTicketsPage() {
                   {tickets.map((ticket) => (
                     <tr key={ticket.id}>
                       <td>{getLocalizedText(ticket.name, locale)}</td>
-                      <td>€{ticket.priceAdult}</td>
-                      <td>€{ticket.priceChild}</td>
+                      <td>€{Number(ticket.priceAdult).toFixed(2)}</td>
+                      <td>€{Number(ticket.priceChild).toFixed(2)}</td>
                       <td>{ticket.stock}</td>
                       <td>
                         <button

@@ -13,10 +13,10 @@ export function Nav() {
   const pathname = usePathname();
   const { t, locale } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
-  const [tickets, setTickets] = useState<{ slug: string; name: string | Record<string, string> }[]>([
-    { slug: 'louvre', name: '' },
-    { slug: 'eiffel', name: '' },
-    { slug: 'seine', name: '' }
+  const [tickets, setTickets] = useState<{ id?: string | number; slug: string; name: string | Record<string, string> }[]>([
+    { id: '1', slug: 'louvre', name: '' },
+    { id: '2', slug: 'eiffel', name: '' },
+    { id: '3', slug: 'seine', name: '' }
   ]);
 
   useEffect(() => {
@@ -59,9 +59,13 @@ export function Nav() {
             const { slug, name } = ticket;
             const href = `/${slug}`;
 
-            // Revert back to using fixed keys for the 3 main menu items
-            const keys = ['nav.louvre', 'nav.eiffel', 'nav.seine'];
-            const fixedKey = keys[index];
+            // Map keys by database ID so changing slugs doesn't break translations
+            const idToKey: Record<string, string> = {
+              '1': 'nav.louvre',
+              '2': 'nav.eiffel',
+              '3': 'nav.seine'
+            };
+            const fixedKey = ticket.id ? idToKey[String(ticket.id)] : undefined;
             const localizedName = fixedKey && t(fixedKey) !== fixedKey ? t(fixedKey) : (typeof name === 'object' && name !== null ? (name as Record<string, string>)[locale] || name['en'] : name);
 
             return (

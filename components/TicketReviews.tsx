@@ -13,22 +13,7 @@ interface Review {
     date: string;
 }
 
-export function TicketReviews({ slug }: { slug: string }) {
-    const [reviews, setReviews] = useState<Review[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (!slug) return;
-        fetch(`/api/reviews?slug=${slug}`)
-            .then(res => res.json())
-            .then(data => setReviews(data.reviews || []))
-            .catch(() => { })
-            .finally(() => setLoading(false));
-    }, [slug]);
-
-    if (loading) {
-        return null;
-    }
+export function TicketReviews({ reviews = [] }: { reviews: Review[] }) {
 
     if (reviews.length === 0) {
         return null;

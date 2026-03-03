@@ -8,14 +8,7 @@ import Image from 'next/image';
 import styles from './TicketDetail.module.css';
 
 interface TicketDetailProps {
-  title: string | Record<string, string>;
-  description: string | Record<string, string>;
-  duration: string | Record<string, string>;
-  priceAdult: number;
-  priceChild: number;
-  slug: string;
-  averageRating?: string;
-  reviewCount?: number;
+  ticket: any;
 }
 
 interface Closures {
@@ -127,17 +120,15 @@ const FALLBACK: Record<
   },
 };
 
-export function TicketDetail({
-  title,
-  description,
-  duration,
-  priceAdult,
-  priceChild,
-  slug,
-  averageRating,
-  reviewCount,
-}: TicketDetailProps) {
+export function TicketDetail({ ticket }: TicketDetailProps) {
   const { t, locale } = useI18n();
+  const slug = ticket.slug;
+  const priceAdult = ticket.priceAdult || 0;
+  const priceChild = ticket.priceChild || 0;
+  const averageRating = ticket.averageRating;
+  const reviewCount = ticket.reviewCount;
+  const title = ticket.name || t(`${slug}.title`);
+  const duration = ticket.duration || t(`${slug}.duration`);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [visitDate, setVisitDate] = useState(() => toIsoDate(new Date()));
@@ -175,26 +166,7 @@ export function TicketDetail({
     emailMismatch?: boolean;
   }>({});
 
-  const [fetchedDetail, setFetchedDetail] = useState<{
-    longDescription?: string | Record<string, string>;
-    included?: string | Record<string, string>;
-    notIncluded?: string | Record<string, string>;
-    important?: string | Record<string, string>;
-    meetingPoint?: string | Record<string, string>;
-    mapSrc?: string;
-    images?: string[];
-    thumbnail?: string;
-    closures?: Closures;
-    openingTime?: string;
-    closingTime?: string;
-  } | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/tickets/${slug}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setFetchedDetail(data ?? null))
-      .catch(() => setFetchedDetail(null));
-  }, [slug]);
+  const fetchedDetail = ticket;
 
   const fb = FALLBACK[slug] || {
     longDescription: '',
@@ -213,9 +185,9 @@ export function TicketDetail({
     mapSrc: fetchedDetail?.mapSrc || fb.mapSrc,
   };
 
-  const allImages = fetchedDetail?.images || [];
-  const thumbnail = fetchedDetail?.thumbnail;
-  const images = Array.from(new Set(thumbnail ? [thumbnail, ...allImages] : allImages));
+  const allImages: string[] = ticket.images || [];
+  const thumbnail: string | undefined = ticket.thumbnail;
+  const images: string[] = Array.from(new Set(thumbnail ? [thumbnail, ...allImages] : allImages));
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -612,7 +584,7 @@ export function TicketDetail({
                   +
                 </button>
               </div>
-              <span className={styles.price}>€{priceAdult}</span>
+              <span className={styles.price}>€{Number(priceAdult).toFixed(2)}</span>
             </div>
             <div className={styles.row}>
               <span>{t('tickets.child')}</span>
@@ -635,7 +607,7 @@ export function TicketDetail({
                   +
                 </button>
               </div>
-              <span className={styles.price}>€{priceChild}</span>
+              <span className={styles.price}>€{Number(priceChild).toFixed(2)}</span>
             </div>
           </div>
 
@@ -705,7 +677,7 @@ export function TicketDetail({
 
           <div className={styles.total}>
             <span>{t('tickets.total')}</span>
-            <span className={styles.totalPrice}>€{total}</span>
+            <span className={styles.totalPrice}>€{Number(total).toFixed(2)}</span>
           </div>
 
           <button

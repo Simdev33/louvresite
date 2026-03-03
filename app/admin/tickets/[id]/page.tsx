@@ -328,7 +328,7 @@ export default function EditTicketPage() {
               <input
                 type="number"
                 min={0}
-                step={1}
+                step="0.01"
                 className={styles.input}
                 value={form.priceAdult ?? ''}
                 onChange={(e) =>
@@ -340,7 +340,7 @@ export default function EditTicketPage() {
               <input
                 type="number"
                 min={0}
-                step={1}
+                step="0.01"
                 className={styles.input}
                 value={form.priceChild ?? ''}
                 onChange={(e) =>

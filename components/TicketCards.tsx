@@ -24,16 +24,8 @@ function stripHtml(html: string) {
   return html.replace(/<[^>]*>?/gm, '');
 }
 
-export function TicketCards() {
+export function TicketCards({ tickets = [] }: { tickets: PublicTicket[] }) {
   const { t, locale } = useI18n();
-  const [tickets, setTickets] = useState<PublicTicket[]>([]);
-
-  useEffect(() => {
-    fetch(`/api/tickets?t=${Date.now()}`)
-      .then(res => res.json())
-      .then(data => setTickets(data.tickets || []))
-      .catch(() => { });
-  }, []);
 
   return (
     <section className={styles.section} aria-label="Jegyek">
@@ -65,7 +57,7 @@ export function TicketCards() {
                 <p className={styles.duration}>{t('tickets.duration')}: {getLocalizedText(duration, locale)}</p>
                 <div className={styles.footer}>
                   <span className={styles.price}>
-                    {t('tickets.from')} €{priceAdult}
+                    {t('tickets.from')} €{Number(priceAdult).toFixed(2)}
                   </span>
                   <Link href={`/${slug}`} className={styles.cta}>
                     {t('tickets.buy')}

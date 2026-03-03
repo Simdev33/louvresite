@@ -14,6 +14,7 @@ export const viewport: Viewport = {
 };
 
 import Footer from '@/components/Footer';
+import Script from 'next/script';
 
 export default function RootLayout({
   children,
@@ -23,6 +24,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/*
+        <Script
+          id="Cookiebot"
+          src="https://consent.cookiebot.com/uc.js"
+          data-cbid="4597954d-3783-47e0-8462-99cd7ad37a4f"
+          data-blockingmode="auto"
+        />
+        */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

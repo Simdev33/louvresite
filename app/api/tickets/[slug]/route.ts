@@ -1,42 +1,31 @@
 import { NextResponse } from 'next/server';
-import { readFileSync } from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'tickets.json');
-
-function loadTickets() {
-  try {
-    const raw = readFileSync(DATA_PATH, 'utf-8');
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-}
-
-function loadReviews() {
-  try {
-    const raw = readFileSync(path.join(process.cwd(), 'data', 'reviews.json'), 'utf-8');
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-}
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  const tickets = loadTickets() as { slug: string;[k: string]: unknown }[];
-  const ticket = tickets.find((t) => t.slug === slug);
-  if (!ticket) {
+
+  const { data: ticket, error: ticketError } = await supabase
+    .from('tickets')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (ticketError || !ticket) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const reviews = loadReviews() as any[];
-  const ticketReviews = reviews.filter((r) => r.ticketSlug === slug);
+  const { data: reviews, error: reviewsError } = await supabase
+    .from('reviews')
+    .select('*')
+    .eq('ticketSlug', slug)
+    .eq('status', 'approved');
+
+  const ticketReviews = reviews || [];
   let averageRating = 0;
   if (ticketReviews.length > 0) {
     const total = ticketReviews.reduce((sum: number, r: any) => sum + r.rating, 0);

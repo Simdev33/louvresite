@@ -1,52 +1,61 @@
 import { NextResponse } from 'next/server';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import path from 'path';
+import { revalidatePath } from 'next/cache';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'reviews.json');
-
-function loadReviews() {
-    try {
-        if (!existsSync(DATA_PATH)) {
-            writeFileSync(DATA_PATH, '[]', 'utf-8');
-            return [];
-        }
-        const raw = readFileSync(DATA_PATH, 'utf-8');
-        return JSON.parse(raw);
-    } catch {
-        return [];
-    }
-}
-
-function saveReviews(reviews: any[]) {
-    writeFileSync(DATA_PATH, JSON.stringify(reviews, null, 2), 'utf-8');
-}
-
 export async function GET() {
-    const reviews = loadReviews();
-    return NextResponse.json({ reviews });
+    try {
+        const { data: reviews, error } = await supabase.from('reviews').select('*').order('createdAt', { ascending: false });
+        if (error) throw error;
+
+        // Map to old format for existing admin frontend
+        const mappedReviews = (reviews || []).map(r => ({
+            id: r.id,
+            ticketSlug: r.ticketSlug,
+            author: r.userName,
+            rating: r.rating,
+            text: r.comment,
+            date: r.createdAt,
+            status: r.status
+        }));
+
+        return NextResponse.json({ reviews: mappedReviews });
+    } catch (err) {
+        return NextResponse.json({ reviews: [] });
+    }
 }
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const reviews = loadReviews();
 
-        const newReview = {
-            id: Date.now().toString(),
+        const { data: newReview, error } = await supabase.from('reviews').insert({
             ticketSlug: body.ticketSlug,
-            author: body.author,
+            userName: body.author,
             rating: parseInt(body.rating, 10),
-            text: body.text,
-            date: body.date || new Date().toISOString()
+            comment: body.text,
+            createdAt: body.date || new Date().toISOString(),
+            status: body.status || 'approved'
+        }).select().single();
+
+        if (error) throw error;
+
+        const mappedReview = {
+            id: newReview.id,
+            ticketSlug: newReview.ticketSlug,
+            author: newReview.userName,
+            rating: newReview.rating,
+            text: newReview.comment,
+            date: newReview.createdAt,
+            status: newReview.status
         };
 
-        reviews.push(newReview);
-        saveReviews(reviews);
+        revalidatePath('/', 'layout');
 
-        return NextResponse.json({ review: newReview });
+        return NextResponse.json({ review: mappedReview });
     } catch (err) {
+        console.error('Failed to create review:', err);
         return NextResponse.json({ error: 'Failed to create review' }, { status: 500 });
     }
 }
@@ -60,15 +69,11 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: 'Missing review id' }, { status: 400 });
         }
 
-        let reviews = loadReviews();
-        const initialLength = reviews.length;
-        reviews = reviews.filter((r: any) => r.id !== id);
+        const { error } = await supabase.from('reviews').delete().eq('id', id);
 
-        if (reviews.length === initialLength) {
-            return NextResponse.json({ error: 'Review not found' }, { status: 404 });
-        }
+        if (error) throw error;
 
-        saveReviews(reviews);
+        revalidatePath('/', 'layout');
 
         return NextResponse.json({ success: true });
     } catch (err) {

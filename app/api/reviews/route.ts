@@ -1,37 +1,26 @@
 import { NextResponse } from 'next/server';
-import { readFileSync, existsSync } from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'reviews.json');
-
-function loadReviews() {
-    try {
-        if (!existsSync(DATA_PATH)) {
-            return [];
-        }
-        const raw = readFileSync(DATA_PATH, 'utf-8');
-        return JSON.parse(raw);
-    } catch {
-        return [];
-    }
-}
 
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const slug = searchParams.get('slug');
 
-        const allReviews = loadReviews();
+        let query = supabase.from('reviews').select('*').eq('status', 'approved');
 
         if (slug) {
-            const filteredReviews = allReviews.filter((r: any) => r.ticketSlug === slug);
-            return NextResponse.json({ reviews: filteredReviews });
+            query = query.eq('ticketSlug', slug);
         }
 
-        return NextResponse.json({ reviews: allReviews });
+        const { data: reviews, error } = await query;
+
+        if (error) throw error;
+
+        return NextResponse.json({ reviews: reviews || [] });
     } catch (err) {
+        console.error('Error fetching reviews:', err);
         return NextResponse.json({ reviews: [] });
     }
 }
