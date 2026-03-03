@@ -59,7 +59,7 @@ export function TicketCards({ tickets = [] }: { tickets: PublicTicket[] }) {
                   <span className={styles.price}>
                     {t('tickets.from')} €{Number(priceAdult).toFixed(2)}
                   </span>
-                  <Link href={`/${slug}`} className={styles.cta}>
+                  <Link href={`/${slug}`} className={styles.cta} aria-label={`${t('tickets.buy')} - ${getLocalizedText(name, locale)}`}>
                     {t('tickets.buy')}
                   </Link>
                 </div>
