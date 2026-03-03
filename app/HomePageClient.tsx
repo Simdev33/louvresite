@@ -39,7 +39,7 @@ export default function HomePageClient({ initialTickets }: { initialTickets: any
                     <div className={styles.bannerInner}>
                         <div className={styles.bannerBg}>
                             <Image
-                                src="/louvreback.jpg"
+                                src="/louvreback.webp"
                                 alt="Louvre Museum background"
                                 fill
                                 priority
