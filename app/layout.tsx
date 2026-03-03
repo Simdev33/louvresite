@@ -33,14 +33,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/*
         <Script
-          id="Cookiebot"
-          src="https://consent.cookiebot.com/uc.js"
-          data-cbid="4597954d-3783-47e0-8462-99cd7ad37a4f"
-          data-blockingmode="auto"
+          id="cookieyes"
+          src="https://cdn-cookieyes.com/client_data/3be1f47f3bdea289cf1dea012ffdd653/script.js"
+          strategy="beforeInteractive"
         />
-        */}
       </head>
       <body className={dmSans.className}>
         <I18nProvider>
