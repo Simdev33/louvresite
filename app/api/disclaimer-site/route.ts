@@ -15,5 +15,7 @@ export async function GET(request: Request) {
     // Fallback to English if not found
     const text = allDisclaimerSite[lang] || allDisclaimerSite['en'] || '';
 
-    return NextResponse.json({ text });
+    return NextResponse.json({ text }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
 }

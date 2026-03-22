@@ -21,5 +21,7 @@ export async function GET(request: Request) {
         answer: faq.answer[lang] || faq.answer['en'] || ''
     }));
 
-    return NextResponse.json({ faqs: localizedFaqs });
+    return NextResponse.json({ faqs: localizedFaqs }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
 }

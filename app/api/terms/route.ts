@@ -15,5 +15,7 @@ export async function GET(request: Request) {
     // Fallback to English if the requested language is not found
     const text = allTerms[lang] || allTerms['en'] || '';
 
-    return NextResponse.json({ text });
+    return NextResponse.json({ text }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
 }
