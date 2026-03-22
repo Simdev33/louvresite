@@ -79,7 +79,7 @@ export default function HomePageClient({ initialTickets }: { initialTickets: any
                                                 <div className={styles.selectorName}>{getLocalizedText(item.name, locale)}</div>
                                                 <div className={styles.selectorMeta}>{t('home.approx')} {getLocalizedText(item.duration, locale)}</div>
                                             </div>
-                                            <div className={styles.selectorPrice}>{t('tickets.from')} €{item.priceAdult}</div>
+                                            <div className={styles.selectorPrice}>{t('tickets.from')} €{Number(item.priceAdult).toFixed(2)}</div>
                                         </a>
                                     ))}
                                 </div>

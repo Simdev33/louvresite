@@ -30,7 +30,7 @@ export function Nav() {
     <nav className={styles.nav} aria-label="Main menu">
       <div className={styles.navInner}>
         <Link href="/" className={styles.logo} onClick={() => setIsOpen(false)}>
-          ParisTickets
+          LouvreTickets
         </Link>
 
         <div className={styles.rightSide}>

@@ -14,6 +14,18 @@ function SuccessContent() {
     const [sessionData, setSessionData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const hasSynced = useRef(false);
+    const hasTracked = useRef(false);
+    const [adsId, setAdsId] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Fetch tracking config for Ads ID
+        fetch('/api/admin/tracking')
+            .then(res => res.json())
+            .then(data => {
+                if (data.tracking?.ads_id) setAdsId(data.tracking.ads_id);
+            })
+            .catch(console.error);
+    }, []);
 
     useEffect(() => {
         if (!sessionId) {
@@ -39,6 +51,22 @@ function SuccessContent() {
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [sessionId]);
+
+    useEffect(() => {
+        if (sessionData && adsId && !hasTracked.current) {
+            const consent = localStorage.getItem('cookie_consent');
+            if (consent === 'true' && typeof window !== 'undefined' && (window as any).gtag) {
+                hasTracked.current = true;
+                const value = (sessionData.amount_total / 100).toFixed(2);
+                (window as any).gtag('event', 'conversion', {
+                    'send_to': adsId,
+                    'value': value,
+                    'currency': sessionData.currency ? sessionData.currency.toUpperCase() : 'EUR',
+                    'transaction_id': sessionId
+                });
+            }
+        }
+    }, [sessionData, adsId, sessionId]);
 
     const meta = sessionData?.metadata || {};
 

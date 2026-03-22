@@ -25,6 +25,9 @@ const dmSans = DM_Sans({
   display: 'swap',
 });
 
+import CookieBanner from '@/components/CookieBanner';
+import TrackingScripts from '@/components/TrackingScripts';
+
 export default function RootLayout({
   children,
 }: {
@@ -32,17 +35,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <Script
-          id="cookieyes"
-          src="https://cdn-cookieyes.com/client_data/3be1f47f3bdea289cf1dea012ffdd653/script.js"
-          strategy="beforeInteractive"
-        />
-      </head>
       <body className={dmSans.className}>
         <I18nProvider>
+          <TrackingScripts />
           {children}
           <Footer />
+          <CookieBanner />
         </I18nProvider>
       </body>
     </html>

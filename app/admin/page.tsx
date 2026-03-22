@@ -53,6 +53,7 @@ export default function AdminPage() {
             <Link href="/admin/disclaimer" className={styles.menuItem}>{t('admin.disclaimer') || 'Disclaimer'}</Link>
             <Link href="/admin/company" className={styles.menuItem}>{t('admin.company') || 'Company'}</Link>
             <Link href="/admin/guide" className={styles.menuItem}>Guide</Link>
+            <Link href="/admin/tracking" className={styles.menuItem}>Tracking</Link>
             <button onClick={handleLogout} className={styles.menuItem} style={{ textAlign: 'left', cursor: 'pointer', background: 'none', border: 'none', color: '#ef4444', fontWeight: 'bold', width: '100%', padding: '10px 15px', marginTop: '10px' }}>Logout</button>
           </nav>
         </aside>

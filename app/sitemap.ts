@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://louvresite.netlify.app';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://louvre-tickets.fr';
 
     const routes: MetadataRoute.Sitemap = [
         { url: `${baseUrl}`, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
