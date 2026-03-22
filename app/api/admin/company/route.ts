@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -18,7 +19,7 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const data = await req.json();
-        await fs.writeFile(dataFile, JSON.stringify(data, null, 2), 'utf8');
+        await supabase.from('site_data').upsert({ id: 'company', data });
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Failed to update company data:', error);

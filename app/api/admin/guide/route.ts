@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 
@@ -6,22 +7,14 @@ export const dynamic = 'force-dynamic';
 
 const DATA_PATH = path.join(process.cwd(), 'data', 'guide.json');
 
-function loadGuide(): Record<string, string> {
-    try {
-        if (!existsSync(DATA_PATH)) {
-            return {};
-        }
-        const raw = readFileSync(DATA_PATH, 'utf-8');
-        return JSON.parse(raw);
-    } catch {
-        return {};
-    }
+async function loadGuide(): Promise<Record<string, string>> {
+    const { data: row } = await supabase.from('site_data').select('data').eq('id', 'guide').single();
+    return row?.data || {};
 }
-
-function saveGuide(data: Record<string, string>) {
-    writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
+async function saveGuide(data: Record<string, string>) {
+    const { error } = await supabase.from('site_data').upsert({ id: 'guide', data: data });
+    if (error) console.error('Error saving:', error);
 }
-
 export async function GET() {
     return NextResponse.json({
         content: loadGuide()
@@ -36,7 +29,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
         }
 
-        saveGuide(guideData);
+        await saveGuide(guideData);
 
         return NextResponse.json({ success: true });
     } catch (err) {

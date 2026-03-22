@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 
@@ -6,24 +7,16 @@ export const dynamic = 'force-dynamic';
 
 const DATA_PATH = path.join(process.cwd(), 'data', 'privacy.json');
 
-function loadPrivacy() {
-    try {
-        if (!existsSync(DATA_PATH)) {
-            return {};
-        }
-        const raw = readFileSync(DATA_PATH, 'utf-8');
-        return JSON.parse(raw);
-    } catch {
-        return {};
-    }
+async function loadPrivacy() {
+    const { data: row } = await supabase.from('site_data').select('data').eq('id', 'privacy').single();
+    return row?.data || {};
 }
-
-function savePrivacy(data: Record<string, string>) {
-    writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
+async function savePrivacy(data: Record<string, string>) {
+    const { error } = await supabase.from('site_data').upsert({ id: 'privacy', data: data });
+    if (error) console.error('Error saving:', error);
 }
-
 export async function GET() {
-    const privacy = loadPrivacy();
+    const privacy = await loadPrivacy();
     return NextResponse.json({ privacy });
 }
 
@@ -34,7 +27,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
         }
 
-        savePrivacy(privacy);
+        await savePrivacy(privacy);
         return NextResponse.json({ success: true, privacy });
     } catch (err) {
         return NextResponse.json({ error: 'Failed to update privacy policy' }, { status: 500 });
