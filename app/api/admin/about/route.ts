@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'about.json');
 
 async function loadAbout() {
     const { data: row } = await supabase.from('site_data').select('data').eq('id', 'about').single();
@@ -17,7 +13,9 @@ async function saveAbout(data: Record<string, string>) {
 }
 export async function GET() {
     const about = await loadAbout();
-    return NextResponse.json({ about });
+    return NextResponse.json({ about }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
 }
 
 export async function POST(request: Request) {

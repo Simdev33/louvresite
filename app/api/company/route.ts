@@ -1,22 +1,24 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { promises as fs } from 'fs';
-import path from 'path';
 
-const dataFile = path.join(process.cwd(), 'data', 'company.json');
+export const dynamic = 'force-dynamic';
+
+async function loadCompany() {
+    const { data: row } = await supabase.from('site_data').select('data').eq('id', 'company').single();
+    return row?.data || {};
+}
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const lang = searchParams.get('lang') || 'en';
 
     try {
-        const fileContents = await fs.readFile(dataFile, 'utf8');
-        const data = JSON.parse(fileContents);
-
-        // Return the specified language, fallback to english, or an empty object if somehow not found
+        const data = await loadCompany();
         const localizedCompany = data[lang] || data['en'] || {};
 
-        return NextResponse.json(localizedCompany);
+        return NextResponse.json(localizedCompany, {
+            headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+        });
     } catch (error) {
         console.error('Failed to read company data:', error);
         return NextResponse.json({ error: 'Failed to read data' }, { status: 500 });

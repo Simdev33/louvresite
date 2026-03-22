@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'guide.json');
 
 async function loadGuide(): Promise<Record<string, string>> {
     const { data: row } = await supabase.from('site_data').select('data').eq('id', 'guide').single();
@@ -16,8 +12,9 @@ async function saveGuide(data: Record<string, string>) {
     if (error) console.error('Error saving:', error);
 }
 export async function GET() {
-    return NextResponse.json({
-        content: loadGuide()
+    const content = await loadGuide();
+    return NextResponse.json({ content }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
     });
 }
 

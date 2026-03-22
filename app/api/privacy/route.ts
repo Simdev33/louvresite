@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { readFileSync, existsSync } from 'fs';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'privacy.json');
 
 async function loadPrivacy() {
     const { data: row } = await supabase.from('site_data').select('data').eq('id', 'privacy').single();

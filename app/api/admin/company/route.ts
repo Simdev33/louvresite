@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { promises as fs } from 'fs';
-import path from 'path';
 
-const dataFile = path.join(process.cwd(), 'data', 'company.json');
+export const dynamic = 'force-dynamic';
+
+async function loadCompany() {
+    const { data: row } = await supabase.from('site_data').select('data').eq('id', 'company').single();
+    return row?.data || {};
+}
 
 export async function GET() {
     try {
-        const fileContents = await fs.readFile(dataFile, 'utf8');
-        const data = JSON.parse(fileContents);
-        return NextResponse.json(data);
+        const data = await loadCompany();
+        return NextResponse.json(data, {
+            headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+        });
     } catch (error) {
         console.error('Failed to read company data:', error);
         return NextResponse.json({ error: 'Failed to read data' }, { status: 500 });
@@ -19,7 +23,11 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const data = await req.json();
-        await supabase.from('site_data').upsert({ id: 'company', data });
+        const { error } = await supabase.from('site_data').upsert({ id: 'company', data });
+        if (error) {
+            console.error('Error saving company:', error);
+            return NextResponse.json({ error: 'Failed to update data' }, { status: 500 });
+        }
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Failed to update company data:', error);

@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'disclaimer.json');
 
 async function loadDisclaimer() {
     const { data: row } = await supabase.from('site_data').select('data').eq('id', 'disclaimer').single();
@@ -17,7 +13,9 @@ async function saveDisclaimer(data: Record<string, string>) {
 }
 export async function GET() {
     const disclaimer = await loadDisclaimer();
-    return NextResponse.json({ disclaimer });
+    return NextResponse.json({ disclaimer }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
 }
 
 export async function POST(request: Request) {

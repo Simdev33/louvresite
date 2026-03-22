@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'faq.json');
 
 export interface FAQItem {
     id: string;
@@ -23,7 +19,9 @@ async function saveFAQs(data: FAQItem[]) {
 }
 export async function GET() {
     const faqs = await loadFAQs();
-    return NextResponse.json({ faqs });
+    return NextResponse.json({ faqs }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
 }
 
 export async function POST(request: Request) {
