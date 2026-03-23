@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
+import { sendOrderConfirmation } from '@/lib/email';
 import fs from 'fs';
 import path from 'path';
 
@@ -110,6 +111,19 @@ export async function POST(req: Request) {
                     console.error('Failed to insert into Supabase:', error);
                 } else {
                     console.log('Successfully inserted order into Paristick table');
+
+                    await sendOrderConfirmation({
+                        ticketName: metadata.name || 'Louvre Museum Ticket',
+                        date: metadata.date || '',
+                        time: metadata.time || '',
+                        adults: parseInt(metadata.adult || '0', 10),
+                        children: parseInt(metadata.child || '0', 10),
+                        totalPrice: (session.amount_total || 0) / 100,
+                        customerName: metadata.fullName || session.customer_details?.name || 'Guest',
+                        customerEmail: customerEmail,
+                        customerPhone: metadata.phone || '',
+                        sessionId: session.id,
+                    });
                 }
             } catch (dbErr) {
                 console.error('Supabase Error:', dbErr);
