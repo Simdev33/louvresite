@@ -7,7 +7,7 @@ export async function GET() {
     try {
         const { data, error } = await supabase
             .from('settings')
-            .select('gtm_id, ga4_id, ads_id')
+            .select('gtm_id, ga4_id, ads_id, conversion_label')
             .eq('id', 'tracking_ids')
             .single();
 
@@ -36,7 +36,8 @@ export async function POST(request: Request) {
                 id: 'tracking_ids',
                 gtm_id: tracking.gtm_id || null,
                 ga4_id: tracking.ga4_id || null,
-                ads_id: tracking.ads_id || null
+                ads_id: tracking.ads_id || null,
+                conversion_label: tracking.conversion_label || null
             });
 
         if (error) {

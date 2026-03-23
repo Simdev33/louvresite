@@ -12,7 +12,8 @@ export default function AdminTrackingPage() {
     const [tracking, setTracking] = useState({
         gtm_id: '',
         ga4_id: '',
-        ads_id: ''
+        ads_id: '',
+        conversion_label: ''
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -26,7 +27,8 @@ export default function AdminTrackingPage() {
                     setTracking({
                         gtm_id: data.tracking.gtm_id || '',
                         ga4_id: data.tracking.ga4_id || '',
-                        ads_id: data.tracking.ads_id || ''
+                        ads_id: data.tracking.ads_id || '',
+                        conversion_label: data.tracking.conversion_label || ''
                     });
                 }
             })
@@ -131,7 +133,22 @@ export default function AdminTrackingPage() {
                                     placeholder="AW-"
                                 />
                                 <small style={{ display: 'block', marginTop: '5px', color: '#64748b' }}>
-                                    This ID will be used to fire e-commerce purchase conversion events on the success page.
+                                    Your Google Ads account ID, used for gtag config.
+                                </small>
+                            </div>
+
+                            <div className={styles.field}>
+                                <label className={styles.label}>Google Ads Conversion Label (e.g., AbC1DeFgHiJkLmN)</label>
+                                <input
+                                    type="text"
+                                    className={styles.input}
+                                    value={tracking.conversion_label}
+                                    onChange={e => setTracking({ ...tracking, conversion_label: e.target.value })}
+                                    placeholder="AbC1DeFgHiJkLmN"
+                                />
+                                <small style={{ display: 'block', marginTop: '5px', color: '#64748b' }}>
+                                    Found in Google Ads → Goals → Conversions → Your action → Tag setup.
+                                    Combined with Ads ID to form: AW-XXXXXXXXXX/AbC1DeFgHiJkLmN
                                 </small>
                             </div>
 

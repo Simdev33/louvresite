@@ -16,13 +16,14 @@ function SuccessContent() {
     const hasSynced = useRef(false);
     const hasTracked = useRef(false);
     const [adsId, setAdsId] = useState<string | null>(null);
+    const [conversionLabel, setConversionLabel] = useState<string | null>(null);
 
     useEffect(() => {
-        // Fetch tracking config for Ads ID
         fetch('/api/admin/tracking')
             .then(res => res.json())
             .then(data => {
                 if (data.tracking?.ads_id) setAdsId(data.tracking.ads_id);
+                if (data.tracking?.conversion_label) setConversionLabel(data.tracking.conversion_label);
             })
             .catch(console.error);
     }, []);
@@ -53,20 +54,34 @@ function SuccessContent() {
     }, [sessionId]);
 
     useEffect(() => {
-        if (sessionData && adsId && !hasTracked.current) {
-            const consent = localStorage.getItem('cookie_consent');
-            if (consent === 'true' && typeof window !== 'undefined' && (window as any).gtag) {
-                hasTracked.current = true;
-                const value = (sessionData.amount_total / 100).toFixed(2);
-                (window as any).gtag('event', 'conversion', {
-                    'send_to': adsId,
-                    'value': value,
-                    'currency': sessionData.currency ? sessionData.currency.toUpperCase() : 'EUR',
-                    'transaction_id': sessionId
-                });
-            }
+        if (!sessionData || !adsId || !conversionLabel || hasTracked.current) return;
+        const consent = localStorage.getItem('cookie_consent');
+        if (consent !== 'true') return;
+
+        const sendConversion = () => {
+            if (typeof window === 'undefined' || !(window as any).gtag) return false;
+            hasTracked.current = true;
+            const value = (sessionData.amount_total / 100).toFixed(2);
+            (window as any).gtag('event', 'conversion', {
+                'send_to': `${adsId}/${conversionLabel}`,
+                'value': parseFloat(value),
+                'currency': sessionData.currency ? sessionData.currency.toUpperCase() : 'EUR',
+                'transaction_id': sessionId
+            });
+            return true;
+        };
+
+        if (!sendConversion()) {
+            let attempts = 0;
+            const interval = setInterval(() => {
+                attempts++;
+                if (sendConversion() || attempts >= 20) {
+                    clearInterval(interval);
+                }
+            }, 500);
+            return () => clearInterval(interval);
         }
-    }, [sessionData, adsId, sessionId]);
+    }, [sessionData, adsId, conversionLabel, sessionId]);
 
     const meta = sessionData?.metadata || {};
 
