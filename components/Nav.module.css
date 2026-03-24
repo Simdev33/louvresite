@@ -16,9 +16,28 @@
 }
 
 .logo {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.logoMain {
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--color-accent);
+  letter-spacing: -0.02em;
+}
+
+.logoSub {
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  position: relative;
+  top: -0.5px;
 }
 
 .rightSide {
