@@ -35,7 +35,7 @@ export default function Footer() {
                         <Link href="/privacy" className={styles.link}>{t('footer.privacy')}</Link>
                         <Link href="/terms" className={styles.link}>{t('footer.terms')}</Link>
                         <Link href="/about" className={styles.link}>{t('footer.about')}</Link>
-                        <Link href="/cancellation" className={styles.link}>{t('footer.cancellation')}</Link>
+                        <Link href="/cookie-policy" className={styles.link}>{t('footer.cookiePolicy')}</Link>
                         <Link href="/disclaimer" className={styles.link}>{t('footer.disclaimer')}</Link>
                     </div>
 

@@ -76,6 +76,7 @@ export default function AdminTermsPage() {
                         <Link href="/admin/terms" className={`${styles.menuItem} ${styles.menuItemActive}`}>{t('admin.terms') || 'Terms'}</Link>
             <Link href="/admin/about" className={styles.menuItem}>{t('admin.about') || 'About Us'}</Link>
             <Link href="/admin/privacy" className={styles.menuItem}>{t('admin.privacy') || 'Privacy'}</Link>
+            <Link href="/admin/cookie-policy" className={styles.menuItem}>Cookie Policy</Link>
             <Link href="/admin/faq" className={styles.menuItem}>{t('admin.faq') || 'FAQ'}</Link>
             <Link href="/admin/disclaimer-site" className={styles.menuItem}>{t('admin.disclaimerSite') || 'Disclaimer Site'}</Link>
             <Link href="/admin/disclaimer" className={styles.menuItem}>{t('admin.disclaimer') || 'Disclaimer'}</Link>

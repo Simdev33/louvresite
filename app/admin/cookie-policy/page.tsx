@@ -14,23 +14,23 @@ const LANGUAGES = [
     { code: 'it', label: 'Italiano' },
 ];
 
-export default function AdminPrivacyPage() {
+export default function AdminCookiePolicyPage() {
     const { t } = useI18n();
-    const [privacies, setPrivacies] = useState<Record<string, string>>({});
+    const [cookiePolicy, setCookiePolicy] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        fetch('/api/admin/privacy')
+        fetch('/api/admin/cookie-policy')
             .then((res) => res.json())
-            .then((data) => setPrivacies(data.privacy ?? {}))
-            .catch(() => setPrivacies({}))
+            .then((data) => setCookiePolicy(data.cookiePolicy ?? {}))
+            .catch(() => setCookiePolicy({}))
             .finally(() => setLoading(false));
     }, []);
 
     const handleChange = (lang: string, value: string) => {
-        setPrivacies((prev) => ({
+        setCookiePolicy((prev) => ({
             ...prev,
             [lang]: value,
         }));
@@ -40,10 +40,10 @@ export default function AdminPrivacyPage() {
         setSaving(true);
         setMessage('');
         try {
-            const res = await fetch('/api/admin/privacy', {
+            const res = await fetch('/api/admin/cookie-policy', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ privacy: privacies }),
+                body: JSON.stringify({ cookiePolicy }),
             });
             if (res.ok) {
                 setMessage('Sikeresen mentve!');
@@ -58,9 +58,9 @@ export default function AdminPrivacyPage() {
     };
 
     const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' });
-    window.location.href = '/admin/login';
-  };
+        await fetch('/api/admin/logout', { method: 'POST' });
+        window.location.href = '/admin/login';
+    };
 
     return (
         <main className={styles.main}>
@@ -68,27 +68,27 @@ export default function AdminPrivacyPage() {
                 <aside className={styles.sidebar}>
                     <div className={styles.sidebarTitle}>Admin</div>
                     <nav className={styles.menu}>
-            <Link href="/admin" className={styles.menuItem}>Dashboard</Link>
-            <Link href="/admin/tickets" className={styles.menuItem}>Manage tickets</Link>
-            <Link href="/admin/orders" className={styles.menuItem}>{t('admin.orders') || 'Orders'}</Link>
-            <Link href="/admin/stripe" className={styles.menuItem}>Stripe API</Link>
-            <Link href="/admin/reviews" className={styles.menuItem}>Reviews</Link>
+                        <Link href="/admin" className={styles.menuItem}>Dashboard</Link>
+                        <Link href="/admin/tickets" className={styles.menuItem}>Manage tickets</Link>
+                        <Link href="/admin/orders" className={styles.menuItem}>{t('admin.orders') || 'Orders'}</Link>
+                        <Link href="/admin/stripe" className={styles.menuItem}>Stripe API</Link>
+                        <Link href="/admin/reviews" className={styles.menuItem}>Reviews</Link>
                         <Link href="/admin/terms" className={styles.menuItem}>{t('admin.terms') || 'Terms'}</Link>
-            <Link href="/admin/about" className={styles.menuItem}>{t('admin.about') || 'About Us'}</Link>
-            <Link href="/admin/privacy" className={`${styles.menuItem} ${styles.menuItemActive}`}>{t('admin.privacy') || 'Privacy'}</Link>
-            <Link href="/admin/cookie-policy" className={styles.menuItem}>Cookie Policy</Link>
-            <Link href="/admin/faq" className={styles.menuItem}>{t('admin.faq') || 'FAQ'}</Link>
-            <Link href="/admin/disclaimer-site" className={styles.menuItem}>{t('admin.disclaimerSite') || 'Disclaimer Site'}</Link>
-            <Link href="/admin/disclaimer" className={styles.menuItem}>{t('admin.disclaimer') || 'Disclaimer'}</Link>
-            <Link href="/admin/company" className={styles.menuItem}>{t('admin.company') || 'Company'}</Link>
-            <Link href="/admin/guide" className={styles.menuItem}>Guide</Link>
-            <Link href="/admin/tracking" className={styles.menuItem}>Tracking</Link>
-            <button onClick={handleLogout} className={styles.menuItem} style={{ textAlign: 'left', cursor: 'pointer', background: 'none', border: 'none', color: '#ef4444', fontWeight: 'bold', width: '100%', padding: '10px 15px', marginTop: '10px' }}>Logout</button>
-          </nav>
+                        <Link href="/admin/about" className={styles.menuItem}>{t('admin.about') || 'About Us'}</Link>
+                        <Link href="/admin/privacy" className={styles.menuItem}>{t('admin.privacy') || 'Privacy'}</Link>
+                        <Link href="/admin/cookie-policy" className={`${styles.menuItem} ${styles.menuItemActive}`}>Cookie Policy</Link>
+                        <Link href="/admin/faq" className={styles.menuItem}>{t('admin.faq') || 'FAQ'}</Link>
+                        <Link href="/admin/disclaimer-site" className={styles.menuItem}>{t('admin.disclaimerSite') || 'Disclaimer Site'}</Link>
+                        <Link href="/admin/disclaimer" className={styles.menuItem}>{t('admin.disclaimer') || 'Disclaimer'}</Link>
+                        <Link href="/admin/company" className={styles.menuItem}>{t('admin.company') || 'Company'}</Link>
+                        <Link href="/admin/guide" className={styles.menuItem}>Guide</Link>
+                        <Link href="/admin/tracking" className={styles.menuItem}>Tracking</Link>
+                        <button onClick={handleLogout} className={styles.menuItem} style={{ textAlign: 'left', cursor: 'pointer', background: 'none', border: 'none', color: '#ef4444', fontWeight: 'bold', width: '100%', padding: '10px 15px', marginTop: '10px' }}>Logout</button>
+                    </nav>
                 </aside>
 
                 <section className={styles.content}>
-                    <h1 className={styles.title}>{t('admin.privacy') || 'Privacy'}</h1>
+                    <h1 className={styles.title}>Cookie Policy</h1>
 
                     <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eee' }}>
                         {loading ? (
@@ -101,7 +101,7 @@ export default function AdminPrivacyPage() {
                                             {lang.label} ({lang.code})
                                         </label>
                                         <RichEditor
-                                            value={privacies[lang.code] || ''}
+                                            value={cookiePolicy[lang.code] || ''}
                                             onChange={(val) => handleChange(lang.code, val)}
                                         />
                                     </div>
